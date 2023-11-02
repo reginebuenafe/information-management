@@ -8,11 +8,9 @@ import { FaCircleUser, FaUserTie } from 'react-icons/fa6';
 import { MdMarkEmailRead } from 'react-icons/md';
 import { RiUserFollowFill } from 'react-icons/ri';
 
-function Profile() {
+function Profile({ loginStatus, user, setLoginStatus, setUser }) {
+  console.log(user);
   const nav = useNavigate();
-  const [user, setUser] = useState('');
-  const [loginStatus, setLoginStatus] = useState('');
-
   axios.defaults.withCredentials = true;
 
   useEffect(() => {
@@ -30,6 +28,25 @@ function Profile() {
       });
   }, [nav]);
 
+  const handleReturn  = (e) => {
+    e.preventDefault();
+    if(user.userRole === 'ADMIN') {
+      nav('/admin', {
+        loginStatus: loginStatus,
+        user: user,
+        setLoginStatus: setLoginStatus,
+        setUser: setUser
+      });
+    } else {
+      nav('/', {
+        loginStatus: loginStatus,
+        user: user,
+        setLoginStatus: setLoginStatus,
+        setUser: setUser
+      });
+    }
+  }
+
   return (
     <>
       <div className='flex w-full m-auto h-full bg-gray-700 overflow-x-hidden'>
@@ -38,6 +55,8 @@ function Profile() {
           nav={nav} 
           user={user} 
           loginStatus={loginStatus}
+          setLoginStatus={setLoginStatus}
+          setUser={setUser}
           name={'profile'}
         />  
         <div className='w-2/3 m-auto flex flex-col justify-start items-center gap-10'>
@@ -56,7 +75,11 @@ function Profile() {
               <div className='text-center bg-gray-900 p-5 w-full rounded-md '>{user.userRole}</div>
             </div>
           </div>
-          <Link to='/' className='flex gap-2 items-center transition ease-in-out delay-150 bg-green-400 hover:-translate-y-1 hover:scale-100 hover:bg-green-600 hover:text-white duration-300 p-5 rounded-lg text-gray-900'><BsBoxArrowLeft />Back to Dashboard</Link>
+          <button onClick={handleReturn} 
+            className='flex gap-2 items-center transition ease-in-out delay-150 bg-green-400 hover:-translate-y-1 hover:scale-100 hover:bg-green-600 hover:text-white duration-300 p-5 rounded-lg text-gray-900'>
+              <BsBoxArrowLeft />
+              Back to Dashboard
+          </button>
         </div>
       </div>
     </>

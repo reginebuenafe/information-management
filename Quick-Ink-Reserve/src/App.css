@@ -7,6 +7,20 @@
   font-family: 'Inder';
 }
 
+.button-content {
+  height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.icon-container {
+  display: inline;
+}
+
+button:hover .icon-container {
+  display: none;
+}
+
 .dynamic-width {
   white-space: nowrap;
   overflow: hidden;

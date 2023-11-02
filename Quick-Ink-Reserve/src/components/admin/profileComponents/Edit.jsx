@@ -5,14 +5,11 @@ import Navbar from '../UI/Navbar';
 import { BsBoxArrowLeft } from 'react-icons/bs';
 import { FaCircleUser } from 'react-icons/fa6';
 import { BsFillShieldLockFill } from 'react-icons/bs';
-import { AiFillUnlock, AiFillLock } from 'react-icons/ai'
+import { AiFillUnlock, AiFillLock } from 'react-icons/ai';
 
-function Edit() {
+function Edit({ loginStatus, user, setLoginStatus, setUser }) {
   const nav = useNavigate();
-  const [user, setUser] = useState('');
-  const [loginStatus, setLoginStatus] = useState('');
   const [values, setValues] = useState({
-    email: '',
     newUsername: '',
     currPassword: '',
     newPassword: '',
@@ -59,6 +56,10 @@ function Edit() {
   const handleEditSubmit = (e) => {
     e.preventDefault();
 
+    if(values.currPassword === '' && values.newPassword === '' && values.confirmPassword === '') {
+      return setCurrPassError('Please input new values!');
+    }
+
     if(!checkNewPassword(values.confirmPassword, values.newPassword)) {
       return setError('Passwords do not match! Please input same values.');
     }
@@ -84,13 +85,34 @@ function Edit() {
       });
   };
 
+  const handleReturn  = (e) => {
+    e.preventDefault();
+    if(user.userRole === 'ADMIN') {
+      nav('/admin', {
+        loginStatus: loginStatus,
+        user: user,
+        setLoginStatus: setLoginStatus,
+        setUser: setUser
+      });
+    } else {
+      nav('/', {
+        loginStatus: loginStatus,
+        user: user,
+        setLoginStatus: setLoginStatus,
+        setUser: setUser
+      });
+    }
+  }
+
   return (
     <>
       <div className='flex w-full m-auto h-full bg-gray-700'>
         <Navbar 
           profilePicture={user.profilePicture} 
-          nav={nav} user={user} 
+          nav={nav} user={user}
+          setUser={setUser} 
           loginStatus={loginStatus}
+          setLoginStatus={setLoginStatus}
           name={'edit'}
         />
         <div className='w-2/3 m-auto flex flex-col justify-center items-center gap-10'>
@@ -164,12 +186,12 @@ function Edit() {
               <div className='w-full flex justify-around'>
                 <button type='submit' className='transition w-1/4 ease-in-out delay-150 bg-blue-400 hover:-translate-y-1 hover:scale-100 hover:bg-blue-600 hover:text-white duration-300 p-5 rounded-lg text-gray-900'>Submit</button>
                 <div className='flex justify-end w-2/3'>
-                <Link
-                  to='/'
+                <button
+                  onClick={handleReturn}
                   className='flex gap-2 items-center justify-end transition ease-in-out delay-150 bg-green-400 hover:-translate-y-1 hover:scale-100 hover:bg-green-600 hover:text-white duration-300 p-5 rounded-lg text-gray-900'
                 >
                   <BsBoxArrowLeft />Back to Dashboard
-                </Link>
+                </button>
               </div>
               </div>
             </form>

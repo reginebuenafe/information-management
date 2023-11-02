@@ -14,7 +14,7 @@ const db = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "",
-    database: "quick-ink-reserve"
+    database: "official-quick-ink-reserve"
 });
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -30,9 +30,9 @@ configDotenv();
 
 app.use(express.json());
 app.use(cors({
-    origin: ["http://localhost:5173"],
-    methods: ["GET", "POST", "PUT"],
-    credentials: true
+    origin: ['http://localhost:5173'],
+    credentials: true,
+    optionsSuccessStatus: 200
 }));
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -87,18 +87,18 @@ app.post('/logout', (req, res) => {
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
     const emailCheck = 'SELECT * FROM user WHERE userEmail = ?';
-
+    
     db.query(emailCheck, [email], (checkError, checkResult) => {
         if (checkError) {
             return res.status(500).json({ Message: "Error from the server side." });
         }
-
+        
         if (checkResult.length === 0) {
             return res.status(401).json({ errorEmailMessage: "Email not found." });
         }
-
+        
         const user = checkResult[0];
-
+        
         bcrypt.compare(password, user.userPassword, (err, response) => {
             if (err) {
                 return res.status(401).json({ errorPasswordMessage: "Incorrect password." });
@@ -106,7 +106,7 @@ app.post('/login', (req, res) => {
             if (response) {
                 req.session.user = user;
                 req.session.loggedIn = true;
-                return res.status(200).json({ Message: "Login successful", user });
+                return res.status(200).json({ Message: "Login successful", user: user, loggedIn: true });
             } else {
                 return res.status(401).json({ errorPasswordMessage: "Incorrect password." });
             }
@@ -117,14 +117,53 @@ app.get('/login', (req, res) => {
     if(req.session.user) {
         return res.status(200).json({ loggedIn: true, user: req.session.user })
     } else {
-        return res.status(200).json({ loggedIn: false });
+        return res.status(200).json({ loggedIn: false, Message: 'No user is logged in.' });
     }
+});
+
+//MATERIAL STUFF
+app.get('/admin/materials', (req, res) => {
+    const query = 'SELECT * FROM materials';
+    db.query(query, (err, result) => {
+        if (err) {
+            return res.status(500).json({ Message: 'Error on the server side!' });
+        }
+        return res.status(200).json({ Message: 'Query successful', result });
+    });
+});
+
+app.post('/admin/materials', upload.single('materialImage'), (req, res) => {
+    const { name, size, count, quantity, units, color, description } = req.body;
+    const materialImagePath = req.file ? req.file.path : null;
+    const insertSql = 'INSERT INTO materials (matName, matSize, matCount, matQty, matUnit, matImageUrl, color, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+    
+    console.log(req.file);
+    const values = [name, size, count, quantity, units, materialImagePath, color, description];
+    db.query(insertSql, values, (err, result) => {
+        if (err) {
+            return res.status(500).json({ Message: 'Error on the server side!' });
+        }
+        return res.status(200).json({ Message: 'Query successful', materials: result });
+    });
+});
+
+app.post('/admin/materials/delete/:id', (req, res) => {
+    const id = req.params.id;
+    const deleteSql = 'DELETE FROM materials WHERE matID = ?';
+
+    db.query(deleteSql, id, (err, result) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({ Message: 'Error on the server side!' });
+        }
+        return res.status(200).json({ Message: 'Query successful', materials: result });
+    });
 });
 
 //SIGNUP POST AND GET
 app.post('/signup', upload.single('profilePicture'), (req, res) => {
-  const { email, password, userName } = req.body;
-  const profilePicturePath = req.file ? req.file.path : null;
+    const { email, password, userName } = req.body;
+    const profilePicturePath = req.file ? req.file.path : null;
 
   const emailCheck = 'SELECT * FROM user WHERE userEmail = ?';
 
@@ -199,7 +238,6 @@ app.put('/reset', (req, res) => {
       });
     });
 });
-  
 
 //PROFILE STUFF
 app.get('/profile', (req, res) => {
@@ -237,11 +275,21 @@ app.get('/test', (req, res) => {
         console.log('Cookie with key "name" does not exist');
     }
 });
+app.get('/test-sql', (req, res) => { 
+    const query = 'SELECT * FROM user';
+    db.query(query, (err, result) => {
+        if (err) {
+            return res.status(500).json({ Message: 'Error on the server side!' });
+        }
+        return res.status(200).json({ Message: 'Query successful', result });
+    });
+});
 app.get('/test-get', (req, res) => {
     const testValue = req.session.testVariable || 'No session data found';
-    //const loggedIn = (req.session.user.userPassword) ? req.session.user.userPassword : null;
+    const loggedIn = (req.session.user.userPassword) != undefined ? req.session.user.userPassword : null;
     res.send(`Session variable value: ${testValue}, Logged In: `);
 });
+
 
 app.listen(5000, () => {
     console.log('Listening to port!');
