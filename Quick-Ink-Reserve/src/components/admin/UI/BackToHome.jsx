@@ -2,7 +2,6 @@ import React from "react";
 import { AiOutlineArrowLeft } from 'react-icons/ai';
 
 function BackToHome({ color, nav }) {
-    console.log(color);
   return (
     <div className="w-1/4 h-[10%] flex items-center absolute left-5">
       <a

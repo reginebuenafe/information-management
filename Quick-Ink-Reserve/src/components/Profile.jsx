@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from './admin/UI/Navbar';
+import { useAppContext } from '../controllers/auth/AuthContext';
 
 import { BsBoxArrowLeft } from 'react-icons/bs';
 import { FaCircleUser, FaUserTie } from 'react-icons/fa6';
 import { MdMarkEmailRead } from 'react-icons/md';
 import { RiUserFollowFill } from 'react-icons/ri';
 
-function Profile({ loginStatus, user, setLoginStatus, setUser }) {
-  console.log(user);
+function Profile() {
   const nav = useNavigate();
+  const { user, setLoginStatus, setUser } = useAppContext();
+
   axios.defaults.withCredentials = true;
 
   useEffect(() => {
@@ -31,32 +33,17 @@ function Profile({ loginStatus, user, setLoginStatus, setUser }) {
   const handleReturn  = (e) => {
     e.preventDefault();
     if(user.userRole === 'ADMIN') {
-      nav('/admin', {
-        loginStatus: loginStatus,
-        user: user,
-        setLoginStatus: setLoginStatus,
-        setUser: setUser
-      });
+      nav('/admin');
     } else {
-      nav('/', {
-        loginStatus: loginStatus,
-        user: user,
-        setLoginStatus: setLoginStatus,
-        setUser: setUser
-      });
+      nav('/');
     }
   }
 
   return (
     <>
       <div className='flex w-full m-auto h-full bg-gray-700 overflow-x-hidden'>
-        <Navbar 
-          profilePicture={user.profilePicture} 
-          nav={nav} 
-          user={user} 
-          loginStatus={loginStatus}
-          setLoginStatus={setLoginStatus}
-          setUser={setUser}
+        <Navbar
+          nav={nav}
           name={'profile'}
         />  
         <div className='w-2/3 m-auto flex flex-col justify-start items-center gap-10'>

@@ -6,9 +6,10 @@ import { BsBoxArrowLeft } from 'react-icons/bs';
 import { FaCircleUser } from 'react-icons/fa6';
 import { BsFillShieldLockFill } from 'react-icons/bs';
 import { AiFillUnlock, AiFillLock } from 'react-icons/ai';
+import { useAppContext } from '../../../controllers/auth/AuthContext';
 
-function Edit({ loginStatus, user, setLoginStatus, setUser }) {
-  const nav = useNavigate();
+function Edit() {
+  const { loginStatus, user, setLoginStatus, setUser } = useAppContext();
   const [values, setValues] = useState({
     newUsername: '',
     currPassword: '',
@@ -19,6 +20,7 @@ function Edit({ loginStatus, user, setLoginStatus, setUser }) {
   const [error, setError] = useState('');
   const [currPassError, setCurrPassError] = useState('');
   const [success, setSuccess] = useState('');
+  const nav = useNavigate();
 
   axios.defaults.withCredentials = true;
 

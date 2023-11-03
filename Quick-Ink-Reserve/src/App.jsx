@@ -8,18 +8,12 @@ import SignUp from './components/SignUp'
 import Home from './components/Home'
 import Profile from './components/Profile'
 import Edit from './components/admin/profileComponents/Edit'
+import { useAppContext } from './controllers/auth/AuthContext'
 
 function App() {
-  const [user, setUser] = useState({
-    userEmail: '',
-    userName: '',
-    userAddress: '',
-    number: '',
-    userRole: '',
-    profilePicture: '',
-  });
-  const [loginStatus, setLoginStatus] = useState(false);
+  const { loginStatus, user, setLoginStatus, setUser } = useAppContext();
 
+  axios.defaults.withCredentials = true;
   useEffect(() => {
     const sessionCookie = document.cookie.split(': ')
     .filter((cookie) => cookie.startsWith('name'));
@@ -33,10 +27,13 @@ function App() {
                 userEmail: response.data.user.userEmail,
                 userName: response.data.user.userName,
                 userAddress: response.data.user.userAddress,
+                userRole: response.data.user.userRole,
                 profilePicture: response.data.user.profilePicture
-              }))
+              }));
+            } else {
+              setLoginStatus(false);
             }
-      });
+      })
     } else {
       setLoginStatus(false);
     }
@@ -45,46 +42,11 @@ function App() {
   return (
       <Router>
         <Routes>
-          <Route path='/login' element={ 
-            <Login 
-              loginStatus={loginStatus}
-              user={user}
-              setLoginStatus={setLoginStatus}
-              setUser={setUser}
-            />
-          }/>
-          <Route path='/signup' element={
-            <SignUp 
-              loginStatus={loginStatus}
-              user={user}
-              setLoginStatus={setLoginStatus}
-              setUser={setUser}
-            />
-          }/>
-          <Route path='*' element={ 
-            <Home 
-              loginStatus={loginStatus}
-              user={user}
-              setLoginStatus={setLoginStatus}
-              setUser={setUser}
-            />
-          }/>
-          <Route path='/profile' element={ 
-            <Profile 
-              loginStatus={loginStatus}
-              user={user}
-              setLoginStatus={setLoginStatus}
-              setUser={setUser}
-            />
-          }/>
-          <Route path='/edit' element={ 
-            <Edit 
-              loginStatus={loginStatus}
-              user={user}
-              setLoginStatus={setLoginStatus}
-              setUser={setUser}
-            />
-          }/>
+          <Route path='/login' element={<Login />}/>
+          <Route path='/signup' element={<SignUp />}/>
+          <Route path='*' element={<Home />}/>
+          <Route path='/profile' element={<Profile />}/>
+          <Route path='/edit' element={<Edit />}/>
         </Routes>
       </Router>
   )

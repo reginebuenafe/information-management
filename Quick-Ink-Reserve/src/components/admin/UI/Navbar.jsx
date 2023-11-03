@@ -4,16 +4,10 @@ import axios from "axios";
 import { BsFillDoorOpenFill } from "react-icons/bs";
 import EditNavbar from "./adminNavbarComponents/editComponents/EditNavbar";
 import ProfilePicture from "./adminNavbarComponents/editComponents/ProfilePicture";
+import { useAppContext } from "../../../controllers/auth/AuthContext";
 
-function Navbar({
-  loginStatus,
-  user,
-  setLoginStatus,
-  setUser,
-  profilePicture,
-  nav,
-  name,
-}) {
+function Navbar({ nav, name }) {
+  const { loginStatus, user, setLoginStatus, setUser } = useAppContext();
   const handleLogout = (e) => {
     e.preventDefault();
 
@@ -23,7 +17,7 @@ function Navbar({
         if (response.status === 200) {
             setUser('');
           setLoginStatus(false);
-          nav("/");
+          nav("/login");
         } else {
           console.error("Logout error:", response);
         }
@@ -36,7 +30,7 @@ function Navbar({
   return (
     <>
       <div className="w-1/3 flex flex-col items-center justify-center m-auto mb-[300px]">
-        <ProfilePicture profilePicture={profilePicture} user={user} />
+        <ProfilePicture user={user} />
         <EditNavbar 
             handleLogout={handleLogout}
             Icon={<BsFillDoorOpenFill />}

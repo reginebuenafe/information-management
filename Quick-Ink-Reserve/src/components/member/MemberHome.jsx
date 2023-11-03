@@ -1,22 +1,16 @@
 import React, { useEffect } from "react";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
-import LogoutButton from "../admin/UI/LogoutButton";
-import UserWrapper from "../admin/profileComponents/userComponents/UserWrapper";
 import LandingPage from "./LandingPage";
+import { useAppContext } from "../../controllers/auth/AuthContext";
+import CheckUser from "../../controllers/CheckUser";
 
-function MemberHome({ loginStatus, user, setLoginStatus, setUser, nav }) {
+function MemberHome({ nav }) {
+  const { loginStatus, user, setLoginStatus, setUser } = useAppContext();
+
   axios.defaults.withCredentials = true;
 
   useEffect(() => {
-    if (user.userRole == "ADMIN" || user.userRole == "MEMBER") {
-      nav("/", {
-        loginStatus: loginStatus,
-        user: user,
-        setLoginStatus: setLoginStatus,
-        setUser: setUser,
-      });
-    }
+    CheckUser(loginStatus, user, nav);
   }, []);
 
   const handleLogout = (e) => {
@@ -40,13 +34,7 @@ function MemberHome({ loginStatus, user, setLoginStatus, setUser, nav }) {
 
   return (
     <div className="h-full w-full overflow-x-hidden scroll-smooth">
-      <LandingPage 
-        user={user}
-        loginStatus={loginStatus}
-        setLoginStatus={setLoginStatus}
-        setUser={setUser}
-        handleLogout={handleLogout}
-      />
+      <LandingPage handleLogout={handleLogout} />
     </div>
   );
 }

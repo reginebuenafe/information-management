@@ -13,7 +13,7 @@ import FormHeaders from "../../UI/forms/formComponents/FormHeaders";
 import { TableHead, TableCol } from "./tableComponents/TableHead";
 import Timeout from "../../../../controllers/Timeout";
 
-function Materials({ loginStatus }) {
+function Materials({ loginStatus, nav }) {
   const [materials, setMaterials] = useState([]);
   const [readMaterial, setReadMaterial] = useState({});
   const [newMaterial, setNewMaterial] = useState({

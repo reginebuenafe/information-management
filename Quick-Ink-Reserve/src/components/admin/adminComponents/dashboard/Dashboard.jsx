@@ -1,7 +1,8 @@
 import React from "react";
-import UserWrapper from "../../profileComponents/userComponents/UserWrapper";
+import { useAppContext } from "../../../../controllers/auth/AuthContext";
 
-function Dashboard({ loginStatus, user }) {
+function Dashboard() {
+  const { loginStatus, user } = useAppContext();
   return (
     <h1>Dashboard</h1>
   );

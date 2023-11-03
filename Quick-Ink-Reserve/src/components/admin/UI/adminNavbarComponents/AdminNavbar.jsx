@@ -3,8 +3,10 @@ import { ListComponent } from "../homeNavbarComponents/ListComponent";
 import logo from "../../../../assets/logo.png";
 import axios from "axios";
 import LogoutButton from "../LogoutButton";
+import { useAppContext } from "../../../../controllers/auth/AuthContext";
 
-export function AdminNavbar({ loginStatus, user, setLoginStatus, setUser, defaultActive }) {
+export function AdminNavbar({ defaultActive, nav }) {
+  const { loginStatus, user, setLoginStatus, setUser } = useAppContext();
   const handleLogout = (e) => {
     e.preventDefault();
 
@@ -14,13 +16,13 @@ export function AdminNavbar({ loginStatus, user, setLoginStatus, setUser, defaul
         if (response.status === 200) {
           setUser("");
           setLoginStatus(false);
-          nav("/");
+          nav("/login");
         } else {
           console.error("Logout error:", response);
         }
       })
       .catch((error) => {
-        console.error("Logout error:", error);
+        console.log("Logout error:", error);
       });
   };
   return (

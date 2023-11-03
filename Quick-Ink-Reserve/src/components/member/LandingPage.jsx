@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import "./NavBar.css";
 import "./LandingPage.css";
 import logo from "../../assets/logo.png";
@@ -6,8 +6,11 @@ import box from "../../assets/Images/box.jpg";
 import UserWrapper from "../admin/profileComponents/userComponents/UserWrapper";
 import { Link } from "react-router-dom";
 import { LogoutButtonMember } from "../admin/UI/LogoutButton";
+import { useAppContext } from "../../controllers/auth/AuthContext";
+import { Routes, Route } from "react-router-dom";
 
-function LandingPage({ loginStatus, user, handleLogout }) {
+function LandingPage({ handleLogout }) {
+  const { loginStatus, user } = useAppContext();
   return (
     <>
       <div id="home">
@@ -153,6 +156,8 @@ function LandingPage({ loginStatus, user, handleLogout }) {
           <p>About Quick-Ink-Reserve Lorem Ipsum .,..,.,.</p>
         </div>
       </div>
+      <Routes>
+      </Routes>
     </>
   );
 }

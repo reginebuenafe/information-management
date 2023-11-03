@@ -2,31 +2,14 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import '../index.css'
+import CheckUser from '../controllers/CheckUser';
 
 import { RegisterFormContainer } from './admin/UI/forms/Forms';
 import BackToHome from './admin/UI/BackToHome';
+import { useAppContext } from '../controllers/auth/AuthContext';
 
-function SignUp({ loginStatus, user, setLoginStatus, setUser }) {
-  const nav = useNavigate();
-
-  if(loginStatus === true) {
-    if(user.userRole === 'ADMIN') {
-      nav('/admin', { 
-        loginStatus: loginStatus, 
-        user: user,
-        setLoginStatus: setLoginStatus,
-        setUser: setUser
-      });
-    } else {
-      nav('/', {
-        loginStatus: loginStatus, 
-        user: user,
-        setLoginStatus: setLoginStatus,
-        setUser: setUser
-      });
-    }
-  }
-
+function SignUp() {
+  const { loginStatus, user } = useAppContext();
   const [values, setValues] = useState({
     userName: '',
     email: '',
@@ -38,6 +21,9 @@ function SignUp({ loginStatus, user, setLoginStatus, setUser }) {
     emailError: '',
     passwordError: ''
   });
+  const nav = useNavigate();
+
+  axios.defaults.withCredentials = true;
 
   //INPUT VALIDATION
   const validateEmail = (email) => {
@@ -68,23 +54,7 @@ function SignUp({ loginStatus, user, setLoginStatus, setUser }) {
     }
   
     return passwordError.trim();
-  };
-
-  axios.defaults.withCredentials = true;
-  useEffect(() => {
-    axios.get('http://localhost:5000/login').then((response) => {
-        if(response.data.loggedIn == true) {
-            setLoginStatus(response.data.user.userName)
-            nav('/', {
-              loginStatus: loginStatus, 
-              user: user,
-              setLoginStatus: setLoginStatus,
-              setUser: setUser
-            });
-        }
-    });
-  }, []);
-
+  };  
   function handleFileInputChange(event) {
     const fileInput = event.target;
     
@@ -94,7 +64,7 @@ function SignUp({ loginStatus, user, setLoginStatus, setUser }) {
       
       setValues({ ...values, profilePicture: selectedFile });
     }
-  }  
+  };  
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -126,6 +96,10 @@ function SignUp({ loginStatus, user, setLoginStatus, setUser }) {
             }
       });
   };
+  
+  useEffect(() => {
+    CheckUser(loginStatus, user, nav);
+  }, [loginStatus, user]);
 
   return (
     <div className='bg-[url("https://images.unsplash.com/photo-1477346611705-65d1883cee1e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80")] h-full w-full flex align-items-center justify-center'>
